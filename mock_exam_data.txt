@@ -1,0 +1,170 @@
+==================================================================================
+Problem statement OF MOCK EXAM:
+
+A database consists of following tables.
+PROJECT(PNO, PNAME, CHIEF)
+EMPLOYEE(EMPNO, EMPNAME)
+ASSIGNED(PNO,EMPNO)
+A. Get count of employees working on project.
+B. Get details of employee working on project pr002.
+C. Get details of employee working on project DBMS.
+D. Write a trigger to delete all corresponding records from assigned table if employee id
+deleted.
+
+E. Write a trigger to keep back up of assign table records if project is deleted.
+==================================================================================
+
+
+create table PROJECT(PNO INTEGER, PNAME VARCHAR(30), CHIEF VARCHAR(30));
+create table EMPLOYEE(EMPNO INTEGER, EMPNAME VARCHAR(30));
+create table ASSIGNED(PNO INTEGER, EMPNO INTEGER);
+ALTER TABLE PROJECT ADD PRIMARY KEY (PNO);
+ALTER TABLE EMPLOYEE ADD PRIMARY KEY (EMPNO);
+ALTER TABLE ASSIGNED ADD PRIMARY KEY (PNO, EMPNO);
+ALTER TABLE ASSIGNED ADD FOREIGN KEY (PNO) REFERENCES PROJECT(PNO);
+ALTER TABLE ASSIGNED ADD FOREIGN KEY (EMPNO) REFERENCES EMPLOYEE(EMPNO);
+
+INSERT INTO PROJECT VALUES(1001, "WEB DEV-COLLEGE WEB", "PROF");
+INSERT INTO PROJECT VALUES(1002, "ML BASED PROJECT", "STUDENT");
+INSERT INTO PROJECT VALUES(1003, "IOT BASED PROJECT", "PICT PROF");
+INSERT INTO PROJECT VALUES(1004, "IOT ML MIX", "PICT STUDENT");
+INSERT INTO PROJECT VALUES(1005, "ML MIX WITH WEB DEV+", "VIT STUDENTS");
+
+INSERT INTO EMPLOYEE VALUES(101, "RAHUL SINHA");
+INSERT INTO EMPLOYEE VALUES(102, "NITIN GAVALI");
+INSERT INTO EMPLOYEE VALUES(103, "NIKITA ROTHORD");
+INSERT INTO EMPLOYEE VALUES(104, "MARIAM");
+INSERT INTO EMPLOYEE VALUES(105, "LAILA");
+INSERT INTO EMPLOYEE VALUES(106, "RASHEED");
+
+INSERT INTO ASSIGNED VALUES(1006, 101);
+INSERT INTO ASSIGNED VALUES(1001, 102);
+INSERT INTO ASSIGNED VALUES(1005, 103);
+INSERT INTO ASSIGNED VALUES(1001, 104);
+INSERT INTO ASSIGNED VALUES(1003, 104);
+INSERT INTO ASSIGNED VALUES(1004, 106);
+
+=================================================================================================
+
+QUERY A) 
+
+mysql> SELECT COUNT(*) FROM EMPLOYEE;
++----------+
+| COUNT(*) |
++----------+
+|        6 |
++----------+
+1 row in set (0.00 sec)
+
+=================================================================================================
+
+QUERY B) 
+
+mysql> SELECT * FROM EMPLOYEE WHERE EMPNO=(SELECT EMPNO FROM ASSIGNED WHERE PNO=1002);
++-------+---------+
+| EMPNO | EMPNAME |
++-------+---------+
+|   105 | LAILA   |
++-------+---------+
+1 row in set (0.00 sec)
+
+=================================================================================================
+
+QUERY C) 
+ 
+mysql> SELECT * FROM EMPLOYEE WHERE EMPNO=(SELECT EMPNO FROM ASSIGNED WHERE PNO=(SELECT PNO FROM PROJECT WHERE PNAME="DBMS")); 
++-------+-------------+
+| EMPNO | EMPNAME     |
++-------+-------------+
+|   101 | RAHUL SINHA |
++-------+-------------+
+
+=================================================================================================
+
+QUERY D) 
+
+mysql> CREATE TRIGGER DELEMP BEFORE DELETE ON EMPLOYEE FOR EACH ROW DELETE FROM ASSIGNED WHERE EMPNO=OLD.EMPNO;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SELECT * FROM EMPLOYEE; 
++-------+----------------+
+| EMPNO | EMPNAME        |
++-------+----------------+
+|   101 | RAHUL SINHA    |
+|   102 | NITIN GAVALI   |
+|   103 | NIKITA ROTHORD |
+|   104 | MARIAM         |
+|   105 | LAILA          |
+|   106 | RASHEED        |
++-------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM ASSIGNED; 
++------+-------+
+| PNO  | EMPNO |
++------+-------+
+| 1006 |   101 |
+| 1001 |   102 |
+| 1005 |   103 |
+| 1001 |   104 |
+| 1003 |   104 |
+| 1002 |   105 |
+| 1004 |   106 |
++------+-------+
+6 rows in set (0.00 sec)
+
+mysql> DELETE FROM EMPLOYEE WHERE EMPNO=102; 
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM ASSIGNED; 
++------+-------+
+| PNO  | EMPNO |
++------+-------+
+| 1006 |   101 |
+| 1005 |   103 |
+| 1001 |   104 |
+| 1003 |   104 |
+| 1002 |   105 |
+| 1004 |   106 |
++------+-------+
+6 rows in set (0.00 sec)
+
+=================================================================================================
+
+QUERY E) 
+
+mysql> CREATE TRIGGER PROBACKUP BEFORE DELETEON PROJECT FOR EACH ROW INSERT INTO PROBACKUP VALUES(OLD.PNO, OLD.PNAME, OLD.CHIEF);
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CREATE TABLE PROBACKUP(PNO INTEGER, PNAME VARCHAR(30), CHIEF VARCHAR(30)); 
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM PROJECT; 
++------+----------------------+--------------+
+| PNO  | PNAME                | CHIEF        |
++------+----------------------+--------------+
+| 1001 | WEB DEV-COLLEGE WEB  | PROF         |
+| 1002 | ML BASED PROJECT     | STUDENT      |
+| 1003 | IOT BASED PROJECT    | PICT PROF    |
+| 1004 | IOT ML MIX           | PICT STUDENT |
+| 1005 | ML MIX WITH WEB DEV+ | VIT STUDENTS |
+| 1006 | DBMS                 | PROF         |
++------+----------------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM PROBACKUP; 
+Empty set (0.00 sec)
+
+mysql> INSERT INTO PROJECT VALUES(1007, "SQL", "PROF");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> DELETE FROM PROJECT WHERE PNO=1007;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM PROBACKUP; 
++------+-------+-------+
+| PNO  | PNAME | CHIEF |
++------+-------+-------+
+| 1007 | SQL   | PROF  |
++------+-------+-------+
+1 row in set (0.00 sec)
