@@ -1,9 +1,52 @@
 
--- RANKING in SQL
+-- Windowing
+select date, sum(value) over 
+    (order by date between rows 1 preceding and 1 following)
+from sales
+
+
+-- pivot
+select * from sales
+pivot (
+      sum(quantity)
+      for color in ('dark','pastel','white')
+)
+order by item name; 
+
+
+-- Cube operation
+select item_name, color, size, sum(number)
+from sales
+group by cube(item_name, color, size)
+
+
+-- roll up
+select item_name, color, size, sum(number)
+from sales
+group by rollup(item_name, color, size)
+
+--  generate union on { (item_name, color, size), (item_name, color), (item_name), ( ) }
+
+
+-- multiple rollup
+
+select item_name, color, size, sum(number)
+from sales
+group by rollup(item_name), rollup(color, size)
+     
+/*
+generates the groupings 
+        {item_name, ()} X {(color, size), (color), ()} 
+	        = { (item_name, color, size), (item_name, color), (item_name), 
+             (color, size), (color), ( ) }
+*/
+
+
+-- RANKING
 select card_id, salary_hour, 
-		rank() over(order by salary_hour) as p_rank
+		rank() over(partition by age order by salary_hour) as p_rank
 from employee 
-order by p_rank; 
+order by p_rank;
 
 /*
 
@@ -55,11 +98,6 @@ Result:
 '15','25.00','19'
 
 */
-
-
-
--- Windowing in SQL
-
 
 
 -- SQL functions
