@@ -60,3 +60,37 @@ Result:
 
 -- Windowing in SQL
 
+
+
+-- SQL functions
+
+delimiter $$
+CREATE FUNCTION disease_count(disease_name varchar(255)) returns int deterministic
+begin
+	declare	d_count int default 0;
+		select count(*) into d_count
+		from Diagonis
+		here disease = disease_name;
+	return _count;
+end$$
+delimiter ;
+
+
+
+-- Table function
+
+Delimiter $$
+create function diagnosis_with(disease varchar(255)) 
+return table (
+	pname varchar(255),
+	disease varchar(255),
+	diagnosis_date date
+)
+begin
+	return table(
+		select pname, disease, diagnosis_date 
+		from Diagnosis
+		where Diagnosis.disease = diagnosis_with.disease
+	);
+end$$
+Delimiter ;
