@@ -43,3 +43,14 @@ EXEC SQL fetch c into :n, :d END_EXEC
 
 -- cursor close
 EXEC SQL close c;
+
+
+
+--RDF Query 
+select ?name
+where {
+      ?cid title "Intro. to Computer Science" .
+      ?sid sec_course ?cid .
+      ?id takes ?sid .
+      ?id name ?name .
+} 
