@@ -45,6 +45,34 @@ EXEC SQL fetch c into :n, :d END_EXEC
 EXEC SQL close c;
 
 
+-- Dynamic SQL
+EXEC SQL BEGIN DECLARE SECTION;
+varchar sqlstring[256];
+EXEC SQL END DECLARE SECTION;
+.........
+prompt (“Enter update command:“, sqlstring);
+EXEC SQL PREPARE sqlcommand FROM :sqlstring;
+EXEC SQL EXECUTE sqlcommand
+
+- combine prepare and exec
+Exec SQL execute Immediate :sqlstring;
+
+
+-- Call level interface
+SQLPrepare(handle_1, “Select name from Patients”);
+SQLExecute (handle_1)
+
+
+-- prepare statement JDBC
+PreparedStatement pStmt = conn.prepareStatement("insert into instructor values(?,?,?,?)");
+pStmt.setString(1, "88877");
+pStmt.setString(2, "Perry");
+pStmt.setString(3, "Finance");
+pStmt.setInt(4, 125000);
+pStmt.executeUpdate();
+pStmt.setString(1, "88878");
+pStmt.executeUpdate();
+
 
 --RDF Query 
 select ?name
