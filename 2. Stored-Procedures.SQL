@@ -58,5 +58,16 @@
 	END $$
 
 
+
+-- for loop in procedure:
+
+declare n integer default 0;
+for r as
+	select age from patients
+do	
+	set n = n + age
+end for
+
+
 -- PROCEDURE BASICS UNDERSTANDING -> https://www.youtube.com/watch?v=9uL_-rZHFlg&t
 -- PROCEDURE PROBLEM SOLVING TUTORIAL -> https://www.youtube.com/watch?v=dLfMBic1Szk
