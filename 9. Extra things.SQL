@@ -1,4 +1,13 @@
 
+-- Assertion
+CREATE ASSERTION StrepAge CHECK
+(NOT EXISTS 
+(SELECT *
+FROM Patient, Diagnosis
+WHERE Patient.name = Diagnosis.pname AND Diagnosis.disease  =’Strep’ AND Patient.age >= 60));
+
+
+
 -- Object relational database system
 
 -- user defined datatype
