@@ -6,6 +6,10 @@ CREATE ASSERTION StrepAge CHECK
 FROM Patient, Diagnosis
 WHERE Patient.name = Diagnosis.pname AND Diagnosis.disease  =’Strep’ AND Patient.age >= 60));
 
+-- domain
+create domain degree_level varchar(10)
+constraint degree_level_test
+check (value in ('Bachelors', 'Masters', 'Doctorate'));
 
 
 -- Object relational database system
@@ -32,6 +36,15 @@ create table users (ID varchar(20),
      interests interest
 ); 
 
+
+-- grant access
+	GRANT ALL ON Patients TO Biden WITH GRANT OPTION;
+	GRANT SELECT, INSERT ON Patients TO Kamala;
+	GRANT SELECT ON CovidDiagnosis TO PUBLIC;
+	GRANT UPDATE(sal, mgr) ON CovidDiagnosis TO Santa;
+	GRANT EXECUTE ON UpdatePAtientOutcomeTO MrsClaus;
+
+
 -- Type inheritance
 create type Student under Person
 (degree varchar(20));
@@ -52,7 +65,6 @@ create table people_table of Person;
    	 under people_table;
 	create table teachers_table of Teacher
     	under people_table; 
-
 
 
 -- create reference types
