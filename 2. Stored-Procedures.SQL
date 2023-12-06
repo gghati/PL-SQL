@@ -69,5 +69,18 @@ do
 end for
 
 
+-- functions
+create function disease_count (disease_name varchar(45)) returns int  deterministic
+               begin
+               declare d_count  int default 0;
+                      select count(1) into d_count
+                      from Diagnosis
+                      where disease = disease_name;
+               return d_count;
+       end//
+delimiter ;
+
+
+
 -- PROCEDURE BASICS UNDERSTANDING -> https://www.youtube.com/watch?v=9uL_-rZHFlg&t
 -- PROCEDURE PROBLEM SOLVING TUTORIAL -> https://www.youtube.com/watch?v=dLfMBic1Szk
